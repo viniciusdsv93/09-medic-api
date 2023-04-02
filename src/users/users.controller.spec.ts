@@ -3,17 +3,23 @@ import { UsersService } from "./users.service";
 
 describe('Users Controller', () => {
 
-  let usersController: UsersController;
-  let usersService: UsersService;
+  type sutTypes = {
+    usersController: UsersController;
+    usersService: UsersService;
+  }
 
-  beforeEach(() => {
-    usersService = new UsersService();
-    usersController = new UsersController(usersService);
-  })
+  const makeSut = (): sutTypes => {
+    let usersService = new UsersService();
+    let usersController = new UsersController(usersService);
+
+    return {
+      usersService, usersController
+    }
+  }
 
   describe('Find users', () => {
-
     it('should return an array of users', async () => {
+      const { usersController } = makeSut();
       const mockedResult = [
         {
           id: '1',
