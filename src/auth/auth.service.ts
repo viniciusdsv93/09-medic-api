@@ -15,11 +15,7 @@ export class AuthService {
   async signIn(email: string, pass: string): Promise<any> {
     const user = await this.usersService.getUserByEmail(email);
 
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    if (!compareSync(pass, user.password)) {
+    if (!user || !compareSync(pass, user?.password)) {
       throw new UnauthorizedException();
     }
 
