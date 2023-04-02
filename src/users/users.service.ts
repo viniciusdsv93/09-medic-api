@@ -14,28 +14,21 @@ import { PrismaService } from '../prisma/prisma.service';
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) { }
 
-  private readonly users = [
-    {
-      id: '1',
-      email: 'john',
-      password: 'changeme',
-    },
-    {
-      id: '2',
-      email: 'jorge@mail.com',
-      password: '$2b$10$bBfvEB0mT9LWz0KEgybPfe5pPSK5wzxmIQ35.2k2qAvd.NSSlwQym',
-    },
-  ];
-
   async getUserByEmail(email: string) {
-    return this.users.find((user) => user.email === email);
+    const foundUser = await this.prismaService.user.findUnique({
+      where: {
+        email
+      }
+    })
+
+    return foundUser;
   }
 
   async getUsers() {
     const users = await this.prismaService.user.findMany();
 
     return users.map(user => {
-      const {password, ...userData} = user;
+      const { password, ...userData } = user;
       return userData;
     })
   }
@@ -69,10 +62,10 @@ export class UsersService {
     const passwordHash = await hash(password, salt);
     const newUser: User = new User(id, email, passwordHash);
 
-    this.users.push(newUser);
     await this.prismaService.user.create({
       data: newUser
     })
+
     return new ReturnUserDto(newUser);
   }
 }

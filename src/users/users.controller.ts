@@ -16,7 +16,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('users')
 @Controller('/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Get()
   public getUsers() {
@@ -35,6 +35,7 @@ export class UsersController {
     @Res() response: Response,
   ) {
     const user = await this.usersService.createUser(createUserDto);
+
     response
       .status(HttpStatus.CREATED)
       .location(`/users/${user.id}`)
