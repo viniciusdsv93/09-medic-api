@@ -45,10 +45,10 @@ describe('Users Controller', () => {
     })
 
 
-    it('should throw an error if user not exists', async () => {
+    it('should throw a not found error if user not exists', async () => {
       const { usersController } = makeSut();
       const promise = usersController.getUserById('5');
-      await expect(promise).rejects.toThrow();
+      await expect(promise).rejects.toThrowError(NotFoundException);
     })
 
 
