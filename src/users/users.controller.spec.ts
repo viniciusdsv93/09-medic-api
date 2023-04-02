@@ -3,6 +3,7 @@ import { CreateUserDto } from "./dto/create-users.dto";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 import { Response } from "express";
+import { PrismaService } from "../prisma/prisma.service";
 
 describe('Users Controller', () => {
   type sutTypes = {
@@ -11,13 +12,16 @@ describe('Users Controller', () => {
   }
 
   const makeSut = (): sutTypes => {
-    let usersService = new UsersService();
+    let prismaService = new PrismaService();
+    let usersService = new UsersService(prismaService);
     let usersController = new UsersController(usersService);
 
     return {
       usersService, usersController
     }
   }
+
+  //TODO use BeforeAll to populate database and do tests and AfterAll to delete them
 
   describe('Find users', () => {
     it('should return an array of users', async () => {
