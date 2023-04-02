@@ -5,7 +5,6 @@ import { UsersService } from "./users.service";
 import { Response } from "express";
 
 describe('Users Controller', () => {
-
   type sutTypes = {
     usersController: UsersController;
     usersService: UsersService;
