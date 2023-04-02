@@ -3,9 +3,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(helmet())
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -13,7 +15,7 @@ async function bootstrap() {
   );
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT');
- const config = new DocumentBuilder()
+  const config = new DocumentBuilder()
     .setTitle('Medic API')
     .setDescription('This is an API created to manage a clinic\'s medical team')
     .setVersion('1.0')

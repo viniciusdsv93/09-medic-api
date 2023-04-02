@@ -18,7 +18,6 @@ import { ApiTags } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @SkipAuth()
   @Get()
   public getUsers() {
     return this.usersService.getUsers();

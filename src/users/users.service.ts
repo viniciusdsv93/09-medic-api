@@ -29,7 +29,6 @@ export class UsersService {
   }
 
   async getUsers() {
-    return this.users;
     return this.users.map((user) => {
       return {
         ...user,
