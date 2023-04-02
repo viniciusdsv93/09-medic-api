@@ -8,9 +8,12 @@ import { CreateUserDto } from './dto/create-users.dto';
 import { randomUUID } from 'crypto';
 import { User } from './entities/users.entity';
 import { hash } from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly prismaService: PrismaService) { }
+
   private readonly users = [
     {
       id: '1',
@@ -29,16 +32,20 @@ export class UsersService {
   }
 
   async getUsers() {
-    return this.users.map((user) => {
-      return {
-        ...user,
-        password: undefined,
-      };
-    });
+    const users = await this.prismaService.user.findMany();
+
+    return users.map(user => {
+      const {password, ...userData} = user;
+      return userData;
+    })
   }
 
   async getUserById(id: string) {
-    const foundUser = this.users.find((user) => user.id === id);
+    const foundUser = await this.prismaService.user.findUnique({
+      where: {
+        id
+      }
+    })
 
     if (!foundUser) {
       throw new NotFoundException();
@@ -63,7 +70,9 @@ export class UsersService {
     const newUser: User = new User(id, email, passwordHash);
 
     this.users.push(newUser);
-
+    await this.prismaService.user.create({
+      data: newUser
+    })
     return new ReturnUserDto(newUser);
   }
 }
