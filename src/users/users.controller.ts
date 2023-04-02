@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-users.dto';
 import { Response } from 'express';
-import { SkipAuth } from 'src/common/skipAuth/skipAuth';
+import { SkipAuth } from '../common/skipAuth/skipAuth';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('users')
