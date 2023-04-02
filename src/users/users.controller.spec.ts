@@ -1,6 +1,8 @@
-import { NotFoundException } from "@nestjs/common";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { CreateUserDto } from "./dto/create-users.dto";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
+import { Response } from "express";
 
 describe('Users Controller', () => {
 
@@ -47,6 +49,18 @@ describe('Users Controller', () => {
       const { usersController } = makeSut();
       const promise = usersController.getUserById('5');
       await expect(promise).rejects.toThrow();
+    })
+
+
+    it('should throw a bad request error if email already exists on user creation', async () => {
+      const { usersController } = makeSut();
+      const createUserDto: CreateUserDto = {
+        email: "jorge@mail.com",
+        password: "password_test"
+      }
+      let response: Response;
+      const promise =  usersController.createUser(createUserDto, response);
+      await expect(promise).rejects.toThrowError(BadRequestException);
     })
   })
 })
