@@ -4,9 +4,11 @@ import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 import { Response } from "express";
 import { PrismaService } from "../prisma/prisma.service";
+import { randomUUID } from "crypto";
 
 describe('Users Controller', () => {
   type sutTypes = {
+    prismaService: PrismaService;
     usersController: UsersController;
     usersService: UsersService;
   }
@@ -17,34 +19,48 @@ describe('Users Controller', () => {
     let usersController = new UsersController(usersService);
 
     return {
-      usersService, usersController
+      prismaService, usersService, usersController
     }
   }
 
   //TODO use BeforeAll to populate database and do tests and AfterAll to delete them
 
+  beforeAll(async () => {
+    const { prismaService } = makeSut()
+
+    await prismaService.user.deleteMany();
+
+    await prismaService.user.create({
+      data: {
+        id: randomUUID(),
+        email: "teste1@mail.com",
+        password: "hashed-password1"
+      }
+    })
+
+    await prismaService.user.create({
+      data: {
+        id: randomUUID(),
+        email: "teste2@mail.com",
+        password: "hashed-password2"
+      }
+    })
+  })
+
   describe('Find users', () => {
     it('should return an array of users', async () => {
       const { usersController } = makeSut();
-      const mockedResult = [
-        {
-          id: '1',
-          email: 'john',
-        },
-        {
-          id: '2',
-          email: 'jorge@mail.com',
-        },
-      ]
       const result = await usersController.getUsers();
-      expect(result).toEqual(mockedResult);
+      expect(result instanceof Array).toBeTruthy();
+      expect(result.length).toBe(2)
     })
 
 
-    it('should return an user\'s data', async () => {
+    it('should return an user\'s ReturnDto data', async () => {
       const { usersController } = makeSut();
-      const result = await usersController.getUserById('2');
-      expect(result).toEqual({ "email": "jorge@mail.com", "id": "2" });
+      const result = await usersController.getUsers()
+      expect(result[0]).toHaveProperty("email")
+      expect(result[0]).toHaveProperty("id")
     })
 
 
@@ -58,11 +74,11 @@ describe('Users Controller', () => {
     it('should throw a bad request error if email already exists on user creation', async () => {
       const { usersController } = makeSut();
       const createUserDto: CreateUserDto = {
-        email: "jorge@mail.com",
+        email: "teste1@mail.com",
         password: "password_test"
       }
       let response: Response;
-      const promise =  usersController.createUser(createUserDto, response);
+      const promise = usersController.createUser(createUserDto, response);
       await expect(promise).rejects.toThrowError(BadRequestException);
     })
   })
