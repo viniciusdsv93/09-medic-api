@@ -47,6 +47,11 @@ describe('Users Controller', () => {
     })
   })
 
+  afterAll(async () => {
+    const { prismaService } = makeSut()
+    await prismaService.user.deleteMany();
+  })
+
   describe('Find users', () => {
     it('should return an array of users', async () => {
       const { usersController } = makeSut();
