@@ -14,7 +14,7 @@ export class ResearchDetailsController {
     const { user } = request;
     const createdResearchDetail = await this.researchDetailsService.create(createResearchDetailDto, user);
 
-    console.log({createdResearchDetail})
+    console.log({ createdResearchDetail })
     response
       .status(HttpStatus.CREATED)
       .location(`/research-details/${createdResearchDetail.id}`)
@@ -26,10 +26,10 @@ export class ResearchDetailsController {
   //   return this.researchDetailsService.findAll();
   // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.researchDetailsService.findOne(+id);
-  // }
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return await this.researchDetailsService.findOne(id);
+  }
 
   // @Patch(':id')
   // update(@Param('id') id: string, @Body() updateResearchDetailDto: UpdateResearchDetailDto) {

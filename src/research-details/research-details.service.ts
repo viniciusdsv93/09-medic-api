@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateResearchDetailDto } from './dto/create-research-detail.dto';
@@ -11,7 +11,6 @@ export class ResearchDetailsService {
 
   async create(createResearchDetailDto: CreateResearchDetailDto, user: { email: string, sub: string }) {
     const id = randomUUID()
-
     const { term } = createResearchDetailDto
     const { sub } = user;
     const createdResearchDetail = await this.prismaService.researchDetails.create({
@@ -32,9 +31,19 @@ export class ResearchDetailsService {
   //   return `This action returns all researchDetails`;
   // }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} researchDetail`;
-  // }
+  async findOne(id: string) {
+    const researchDetail = await this.prismaService.researchDetails.findUnique({
+      where: {
+        id
+      }
+    })
+
+    if (!researchDetail) {
+      throw new NotFoundException();
+    }
+
+    return researchDetail;
+  }
 
   // update(id: number, updateResearchDetailDto: UpdateResearchDetailDto) {
   //   return `This action updates a #${id} researchDetail`;
