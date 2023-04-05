@@ -8,9 +8,12 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filters/exception.filter';
 import { AuthGuard } from './auth/auth.guard';
 import { ResearchDetailsModule } from './research-details/research-details.module';
+import { WebScrapingService } from './web-scraping/web-scraping.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), UsersModule, AuthModule, ResearchDetailsModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), UsersModule, AuthModule, ResearchDetailsModule],
   controllers: [AppController],
   providers: [
     {
@@ -22,6 +25,8 @@ import { ResearchDetailsModule } from './research-details/research-details.modul
       useClass: AuthGuard
     },
     AppService,
+    PrismaService,
+    WebScrapingService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

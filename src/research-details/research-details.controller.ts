@@ -21,12 +21,7 @@ export class ResearchDetailsController {
       .json(createdResearchDetail);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.researchDetailsService.findAll();
-  // }
-
-  @Get(':id')
+ @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.researchDetailsService.findOne(id);
   }
