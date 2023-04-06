@@ -11,6 +11,7 @@ import { ResearchDetailsModule } from './research-details/research-details.modul
 import { WebScrapingService } from './web-scraping/web-scraping.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaService } from './prisma/prisma.service';
+import { MailSenderService } from './mail-sender/mail-sender.service';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), UsersModule, AuthModule, ResearchDetailsModule],
@@ -27,6 +28,7 @@ import { PrismaService } from './prisma/prisma.service';
     AppService,
     PrismaService,
     WebScrapingService,
+    MailSenderService,
   ],
 })
 export class AppModule { }
