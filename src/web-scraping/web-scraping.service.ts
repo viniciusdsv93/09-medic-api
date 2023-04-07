@@ -3,12 +3,14 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as puppeteer from 'puppeteer';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WebScrapingService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
@@ -45,9 +47,17 @@ export class WebScrapingService {
         });
       });
 
+      for (const link of links) {
+        htmlContent += `<a href=${link.href} target="_blank">${link.text}</a>
+        <p>${link.desc}</p>
+        <br/><br/>`;
+      }
+
+      console.log({ htmlContent });
+
       const infoMail = await this.mailerService.sendMail({
         to: 'viniciusdsv93@gmail.com',
-        from: 'postmaster@sandbox92948a9a9f48423fbd41e13f306b6c55.mailgun.org',
+        from: this.configService.get<string>('EMAIL_FROM'),
         subject: `News - ${r.term} - ${new Date().toDateString()}`,
         html: htmlContent,
       });

@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filters/exception.filter';
 import { AuthGuard } from './auth/auth.guard';
@@ -17,20 +17,17 @@ import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ScheduleModule.forRoot(),
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.mailgun.org', //host smtp
-        secure: false, //regras de segurança do serviço smtp
-        port: 587, // porta
+        host: 'smtp.sendgrid.net', //host smtp
         auth: {
           //dados do usuário e senha
-          user: 'postmaster@sandbox92948a9a9f48423fbd41e13f306b6c55.mailgun.org',
-          pass: 'ac4e25533401e47e448f1d43c84f0151-81bd92f8-00973d7d',
+          user: new ConfigService().get<string>('EMAIL_USER'),
+          pass: new ConfigService().get<string>('EMAIL_PASS'),
         },
-        ignoreTLS: true,
       },
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     ResearchDetailsModule,
