@@ -1,28 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import * as sgTransport from 'nodemailer-sendgrid-transport';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class MailSenderService {
-
-  private transporter;
+  private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 
   constructor() {
-    this.transporter = nodemailer.createTransport(sgTransport({
+    this.transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false,
       auth: {
-        api_key: 'YOUR_API_KEY'
-      }
-    }))
+        user: 'buddy11@ethereal.email',
+        pass: 'tJwYusHSuXYjQpZmw8',
+      },
+    });
   }
 
   async sendEmail(email: string, subject: string, message: string) {
     const mailOptions = {
-      from: 'viniciusdsv93@gmail.com',
+      from: 'buddy11@ethereal.email',
       to: 'viniciusdsv93@gmail.com',
       subject,
-      text: message
-    }
+      text: message,
+    };
 
-    await this.transporter.sendMail(mailOptions);
+    return await this.transporter.sendMail(mailOptions);
   }
 }

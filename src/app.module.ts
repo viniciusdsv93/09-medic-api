@@ -12,9 +12,29 @@ import { WebScrapingService } from './web-scraping/web-scraping.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaService } from './prisma/prisma.service';
 import { MailSenderService } from './mail-sender/mail-sender.service';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), UsersModule, AuthModule, ResearchDetailsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.mailgun.org', //host smtp
+        secure: false, //regras de segurança do serviço smtp
+        port: 587, // porta
+        auth: {
+          //dados do usuário e senha
+          user: 'postmaster@sandbox92948a9a9f48423fbd41e13f306b6c55.mailgun.org',
+          pass: 'ac4e25533401e47e448f1d43c84f0151-81bd92f8-00973d7d',
+        },
+        ignoreTLS: true,
+      },
+    }),
+    UsersModule,
+    AuthModule,
+    ResearchDetailsModule,
+  ],
   controllers: [AppController],
   providers: [
     {
@@ -23,7 +43,7 @@ import { MailSenderService } from './mail-sender/mail-sender.service';
     },
     {
       provide: APP_GUARD,
-      useClass: AuthGuard
+      useClass: AuthGuard,
     },
     AppService,
     PrismaService,
@@ -31,4 +51,4 @@ import { MailSenderService } from './mail-sender/mail-sender.service';
     MailSenderService,
   ],
 })
-export class AppModule { }
+export class AppModule {}
