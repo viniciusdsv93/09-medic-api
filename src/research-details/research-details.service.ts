@@ -2,41 +2,54 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateResearchDetailDto } from './dto/create-research-detail.dto';
-import { ResearchDetail } from './entities/research-detail.entity';
 
 @Injectable()
 export class ResearchDetailsService {
+  constructor(private readonly prismaService: PrismaService) {}
 
-  constructor(private readonly prismaService: PrismaService) { }
-
-  async create(createResearchDetailDto: CreateResearchDetailDto, user: { email: string, sub: string }) {
-    const id = randomUUID()
-    const { term } = createResearchDetailDto
+  async create(
+    createResearchDetailDto: CreateResearchDetailDto,
+    user: { email: string; sub: string },
+  ) {
+    const id = randomUUID();
+    const { term } = createResearchDetailDto;
     const { sub } = user;
-    const createdResearchDetail = await this.prismaService.researchDetails.create({
-      data: {
-        id,
-        term,
-        user: {
-          connect: {
-            id: sub
-          }
-        }
-      }
-    })
+    const createdResearchDetail =
+      await this.prismaService.researchDetails.create({
+        data: {
+          id,
+          term,
+          user: {
+            connect: {
+              id: sub,
+            },
+          },
+        },
+      });
     return createdResearchDetail;
   }
 
-  // findAll() {
-  //   return `This action returns all researchDetails`;
-  // }
+  async findAll(sub: string) {
+    const researchDetailsFromUser =
+      await this.prismaService.researchDetails.findMany({
+        where: {
+          userId: sub,
+        },
+      });
+
+    if (!researchDetailsFromUser) {
+      throw new NotFoundException();
+    }
+
+    return researchDetailsFromUser;
+  }
 
   async findOne(id: string) {
     const researchDetail = await this.prismaService.researchDetails.findUnique({
       where: {
-        id
-      }
-    })
+        id,
+      },
+    });
 
     if (!researchDetail) {
       throw new NotFoundException();

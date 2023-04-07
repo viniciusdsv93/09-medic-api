@@ -1,29 +1,55 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, HttpStatus, Res } from '@nestjs/common';
-import { Response } from 'express'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  HttpStatus,
+  Res,
+} from '@nestjs/common';
+import { Response } from 'express';
 import { ResearchDetailsService } from './research-details.service';
 import { CreateResearchDetailDto } from './dto/create-research-detail.dto';
 import { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 
 @Controller('research-details')
 export class ResearchDetailsController {
-  constructor(private readonly researchDetailsService: ResearchDetailsService) { }
+  constructor(
+    private readonly researchDetailsService: ResearchDetailsService,
+  ) {}
 
   @Post()
-  async create(@Body() createResearchDetailDto: CreateResearchDetailDto, @Req() request: RequestWithUser, @Res() response: Response) {
+  async create(
+    @Body() createResearchDetailDto: CreateResearchDetailDto,
+    @Req() request: RequestWithUser,
+    @Res() response: Response,
+  ) {
     // console.log({ createResearchDetailDto })
     const { user } = request;
-    const createdResearchDetail = await this.researchDetailsService.create(createResearchDetailDto, user);
+    const createdResearchDetail = await this.researchDetailsService.create(
+      createResearchDetailDto,
+      user,
+    );
 
-    console.log({ createdResearchDetail })
+    console.log({ createdResearchDetail });
     response
       .status(HttpStatus.CREATED)
       .location(`/research-details/${createdResearchDetail.id}`)
       .json(createdResearchDetail);
   }
 
- @Get(':id')
+  @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.researchDetailsService.findOne(id);
+  }
+
+  @Get()
+  async findAll(@Req() request: RequestWithUser) {
+    const { user } = request;
+    return await this.researchDetailsService.findAll(user.sub);
   }
 
   // @Patch(':id')
