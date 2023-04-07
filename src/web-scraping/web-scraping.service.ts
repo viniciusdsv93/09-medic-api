@@ -56,7 +56,7 @@ export class WebScrapingService {
       console.log({ htmlContent });
 
       const infoMail = await this.mailerService.sendMail({
-        to: 'viniciusdsv93@gmail.com',
+        to: r.user.email,
         from: this.configService.get<string>('EMAIL_FROM'),
         subject: `News - ${r.term} - ${new Date().toDateString()}`,
         html: htmlContent,
